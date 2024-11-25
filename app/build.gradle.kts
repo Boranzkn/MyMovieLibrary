@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.google.devtools.ksp") version "2.0.21-1.0.27"
 }
 
 android {
@@ -50,6 +51,17 @@ android {
 }
 
 dependencies {
+
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter)
+
+    // Room Database
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
+
+    // ViewModel and LiveData
+    implementation(libs.lifecycle)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
