@@ -1,17 +1,24 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    id("com.google.devtools.ksp") version "2.0.21-1.0.27"
+    kotlin("kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
     namespace = "com.example.mymovielibrary"
-    compileSdk = 34
+    compileSdk = 35
+
+    buildFeatures {
+        buildConfig = true
+    }
 
     defaultConfig {
         applicationId = "com.example.mymovielibrary"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -19,6 +26,10 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        val properties = Properties()
+        properties.load(project.rootProject.file("local.properties").inputStream())
+        buildConfigField("String","TMDB_API_KEY", properties.getProperty("TMDB_API_KEY"))
     }
 
     buildTypes {
@@ -55,13 +66,32 @@ dependencies {
     // Retrofit
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter)
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
 
     // Room Database
     implementation(libs.room.runtime)
-    ksp(libs.room.compiler)
+    implementation(libs.room.paging)
+    implementation(libs.room.ktx)
+    kapt(libs.room.compiler)
 
     // ViewModel and LiveData
     implementation(libs.lifecycle)
+
+    // Navigation
+    implementation(libs.navigation)
+
+    // Dagger - Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    kapt(libs.hilt.compiler2)
+    implementation(libs.hilt.navigation)
+
+    // Coil
+    implementation(libs.coil)
+
+    // Extended Icons
+    implementation(libs.extended.icons)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -71,6 +101,9 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.systemuicontroller)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
