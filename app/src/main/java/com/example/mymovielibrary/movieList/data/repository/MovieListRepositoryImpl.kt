@@ -1,12 +1,14 @@
 package com.example.mymovielibrary.movieList.data.repository
 
 import com.example.mymovielibrary.movieList.data.local.movie.MovieDatabase
+import com.example.mymovielibrary.movieList.data.local.movie.MovieEntity
+import com.example.mymovielibrary.movieList.data.local.movie.WatchedMovie
 import com.example.mymovielibrary.movieList.data.mappers.toMovie
 import com.example.mymovielibrary.movieList.data.mappers.toMovieEntity
 import com.example.mymovielibrary.movieList.data.remote.MovieApi
-import com.example.mymovielibrary.movieList.data.remote.respond.MovieDto
 import com.example.mymovielibrary.movieList.domain.model.Movie
 import com.example.mymovielibrary.movieList.domain.repository.MovieListRepository
+import com.example.mymovielibrary.movieList.util.Category
 import com.example.mymovielibrary.movieList.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -18,26 +20,35 @@ class MovieListRepositoryImpl @Inject constructor(
     private val movieApi: MovieApi,
     private val movieDatabase: MovieDatabase
 ): MovieListRepository {
-    override suspend fun getMovieListFromDatabase(category: String): Flow<Resource<List<Movie>>> {
+
+    override suspend fun getWatchList(): Flow<Resource<List<MovieEntity>>> {
         return flow {
 
             emit(Resource.Loading(true))
 
-            val localMovieList = movieDatabase.movieDao.getMovieListByCategory(category)
+            val watchList = movieDatabase.movieDao.getWatchListMovies()
 
-            if (localMovieList.isNotEmpty()) {
-                emit(Resource.Success(
-                    data = localMovieList.map { movieEntity ->
-                        movieEntity.toMovie(category)
-                    }
-                ))
+            if (watchList.isNotEmpty()) {
+                emit(Resource.Success( data = watchList ))
 
                 emit(Resource.Loading(false))
                 return@flow
             }
-            else{
-                // Write Watched or WatchList is empty to the screen
-                TODO("Not yet implemented")
+        }
+    }
+
+    override suspend fun getWatchedMovieList(): Flow<Resource<List<WatchedMovie>>> {
+        return flow {
+
+            emit(Resource.Loading(true))
+
+            val watchedMovieList = movieDatabase.movieDao.getWatchedMovieList()
+
+            if (watchedMovieList.isNotEmpty()) {
+                emit(Resource.Success( data = watchedMovieList ))
+
+                emit(Resource.Loading(false))
+                return@flow
             }
         }
     }
@@ -80,16 +91,16 @@ class MovieListRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getMovieFromDatabase(id: Int): Flow<Resource<Movie>> {
+    override suspend fun getWatchedMovie(id: Int): Flow<Resource<WatchedMovie>> {
         return flow {
 
             emit(Resource.Loading(true))
 
-            val movieEntity = movieDatabase.movieDao.getMovieById(id)
+            val watchedMovie = movieDatabase.movieDao.getWatchedMovieById(id)
 
-            if (movieEntity != null) {
+            if (watchedMovie != null) {
                 emit(
-                    Resource.Success(movieEntity.toMovie(movieEntity.category))
+                    Resource.Success(watchedMovie)
                 )
 
                 emit(Resource.Loading(false))
@@ -102,7 +113,29 @@ class MovieListRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getMovieFromApi(id: Int): Flow<Resource<MovieDto>> {
+    override suspend fun getWatchListMovie(id: Int): Flow<Resource<MovieEntity>> {
+        return flow {
+
+            emit(Resource.Loading(true))
+
+            val movieEntity = movieDatabase.movieDao.getWatchListMovieById(id)
+
+            if (movieEntity != null) {
+                emit(
+                    Resource.Success(movieEntity)
+                )
+
+                emit(Resource.Loading(false))
+                return@flow
+            }
+
+            emit(Resource.Error("Error no such movie"))
+
+            emit(Resource.Loading(false))
+        }
+    }
+
+    override suspend fun getMovieFromApi(id: Int): Flow<Resource<Movie>> {
         return flow {
 
             emit(Resource.Loading(true))
@@ -125,7 +158,7 @@ class MovieListRepositoryImpl @Inject constructor(
 
             if (movieDto != null) {
                 emit(
-                    Resource.Success(movieDto)
+                    Resource.Success(movieDto.toMovieEntity(Category.POPULAR).toMovie(Category.POPULAR))
                 )
 
                 emit(Resource.Loading(false))
@@ -136,6 +169,14 @@ class MovieListRepositoryImpl @Inject constructor(
 
             emit(Resource.Loading(false))
         }
+    }
+
+    override suspend fun setMovieToWatchList(movie: MovieEntity) {
+        movieDatabase.movieDao.upsertMovieToWatchList(movie)
+    }
+
+    override suspend fun setMovieToWatched(movie: WatchedMovie) {
+        movieDatabase.movieDao.upsertMovieToWatched(movie)
     }
 
 }

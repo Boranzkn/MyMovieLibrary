@@ -1,7 +1,5 @@
 package com.example.mymovielibrary.movieList.domain.model
 
-import androidx.room.PrimaryKey
-
 data class Movie(
     val adult: Boolean,
     val backdrop_path: String,

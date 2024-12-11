@@ -3,7 +3,13 @@ package com.example.mymovielibrary.details.presentation
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mymovielibrary.movieList.data.local.movie.MovieEntity
+import com.example.mymovielibrary.movieList.data.local.movie.WatchedMovie
+import com.example.mymovielibrary.movieList.data.mappers.toMovieEntity
+import com.example.mymovielibrary.movieList.data.remote.respond.MovieDto
 import com.example.mymovielibrary.movieList.domain.repository.MovieListRepository
+import com.example.mymovielibrary.movieList.presentation.MovieListState
+import com.example.mymovielibrary.movieList.util.Category
 import com.example.mymovielibrary.movieList.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,6 +50,22 @@ class DetailsViewModel @Inject constructor(
                         }
                     }
                 }
+            }
+        }
+    }
+
+    fun addToWatchList(movie: MovieEntity?){
+        viewModelScope.launch{
+            movie?.let {
+                movieListRepository.setMovieToWatchList(movie)
+            }
+        }
+    }
+
+    fun addToWatched(movie: WatchedMovie?){
+        viewModelScope.launch{
+            movie?.let {
+                movieListRepository.setMovieToWatched(movie)
             }
         }
     }

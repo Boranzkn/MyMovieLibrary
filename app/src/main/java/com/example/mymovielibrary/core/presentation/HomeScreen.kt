@@ -79,12 +79,12 @@ fun HomeScreen(navController: NavHostController) {
         }
     ) {
         Box(modifier = Modifier.fillMaxSize().padding(it)){
-            NavHost(navController = bottomNavController, startDestination = Screen.PopularMovieList.rout) {
+            NavHost(navController = bottomNavController, startDestination = Screen.Watched.rout) {
                 composable(Screen.Watched.rout){
-                    WatchedMoviesScreen(movieListState, navController, movieListViewModel::onEvent)
+                    WatchedMoviesScreen(movieListState, navController)
                 }
                 composable(Screen.WatchList.rout){
-                    WatchListScreen(movieListState, navController, movieListViewModel::onEvent)
+                    WatchListScreen(navController)
                 }
                 composable(Screen.PopularMovieList.rout){
                     PopularMoviesScreen(movieListState, navController, movieListViewModel::onEvent)
@@ -98,7 +98,8 @@ fun HomeScreen(navController: NavHostController) {
 }
 
 @Composable
-fun BottomNavigationBar(bottomNavController: NavHostController, onEvent: (MovieListUIEvent) -> Unit){val items = listOf(
+fun BottomNavigationBar(bottomNavController: NavHostController, onEvent: (MovieListUIEvent) -> Unit){
+    val items = listOf(
         BottomItem(
             title = "Watched",
             icon = Icons.Rounded.Movie

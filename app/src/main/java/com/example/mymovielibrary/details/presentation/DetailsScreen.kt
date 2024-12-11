@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ImageNotSupported
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -36,13 +37,20 @@ import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
+import com.example.mymovielibrary.movieList.data.mappers.toMovieEntity
 import com.example.mymovielibrary.movieList.data.remote.MovieApi
+import com.example.mymovielibrary.movieList.presentation.MovieListUIEvent
+import com.example.mymovielibrary.movieList.presentation.MovieListViewModel
+import com.example.mymovielibrary.movieList.util.Category
 import com.example.mymovielibrary.movieList.util.RatingBar
 
 @Composable
 fun DetailsScreen() {
     val detailsViewModel = hiltViewModel<DetailsViewModel>()
     val detailsState = detailsViewModel.detailsState.collectAsState().value
+
+    val movieListViewModel = hiltViewModel<MovieListViewModel>()
+    val movieListState = movieListViewModel.movieListState.collectAsState().value
 
     val backdropImageState = rememberAsyncImagePainter(
         model = ImageRequest.Builder(LocalContext.current)
@@ -58,130 +66,147 @@ fun DetailsScreen() {
             .build()
     ).state
 
-    Column(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
-    ) {
-        if (backdropImageState is AsyncImagePainter.State.Error) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(220.dp)
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    modifier = Modifier.size(70.dp),
-                    imageVector = Icons.Rounded.ImageNotSupported,
-                    contentDescription = detailsState.movie?.title
-                )
-            }
-        }
-
-        if (backdropImageState is AsyncImagePainter.State.Success) {
-            Image(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(220.dp),
-                painter = backdropImageState.painter,
-                contentDescription = detailsState.movie?.title,
-                contentScale = ContentScale.Crop
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
+    Box(modifier = Modifier.fillMaxSize()){
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
         ) {
-            Box(
-                modifier = Modifier
-                    .width(160.dp)
-                    .height(240.dp)
-            ) {
-                if (posterImageState is AsyncImagePainter.State.Error) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(MaterialTheme.colorScheme.primaryContainer),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(70.dp),
-                            imageVector = Icons.Rounded.ImageNotSupported,
-                            contentDescription = detailsState.movie?.title
-                        )
-                    }
-                }
-
-                if (posterImageState is AsyncImagePainter.State.Success) {
-                    Image(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(RoundedCornerShape(12.dp)),
-                        painter = posterImageState.painter,
-                        contentDescription = detailsState.movie?.title,
-                        contentScale = ContentScale.Crop
+            if (backdropImageState is AsyncImagePainter.State.Error) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(220.dp)
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        modifier = Modifier.size(70.dp),
+                        imageVector = Icons.Rounded.ImageNotSupported,
+                        contentDescription = detailsState.movie?.title
                     )
                 }
             }
 
-            detailsState.movie?.let {movie ->
-                Column(
-                    modifier = Modifier.fillMaxWidth()
+            if (backdropImageState is AsyncImagePainter.State.Success) {
+                Image(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(220.dp),
+                    painter = backdropImageState.painter,
+                    contentDescription = detailsState.movie?.title,
+                    contentScale = ContentScale.Crop
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .width(160.dp)
+                        .height(240.dp)
                 ) {
-                    Text(modifier = Modifier.padding(start = 16.dp), text = movie.title, fontSize = 19.sp, fontWeight = FontWeight.SemiBold)
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Row (
-                        modifier = Modifier.padding(start = 16.dp)
-                    ){
-                        RatingBar(
-                            starsModifier = Modifier.size(18.dp),
-                            rating = movie.vote_average?.div(2) ?: 0.0
-                        )
-
-                        Text(
-                            modifier = Modifier.padding(start = 4.dp),
-                            text = movie.vote_average.toString().take(3),
-                            color = Color.LightGray,
-                            fontSize = 14.sp,
-                            maxLines = 1
-                        )
+                    if (posterImageState is AsyncImagePainter.State.Error) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(MaterialTheme.colorScheme.primaryContainer),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(70.dp),
+                                imageVector = Icons.Rounded.ImageNotSupported,
+                                contentDescription = detailsState.movie?.title
+                            )
+                        }
                     }
 
-                    Spacer(modifier = Modifier.height(10.dp))
+                    if (posterImageState is AsyncImagePainter.State.Success) {
+                        Image(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(12.dp)),
+                            painter = posterImageState.painter,
+                            contentDescription = detailsState.movie?.title,
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                }
 
-                    Text(modifier = Modifier.padding(start = 16.dp), text = movie.vote_count.toString() + " votes")
+                detailsState.movie?.let {movie ->
+                    Column(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(modifier = Modifier.padding(start = 16.dp), text = movie.title, fontSize = 19.sp, fontWeight = FontWeight.SemiBold)
 
-                    Spacer(modifier = Modifier.height(10.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    Text(modifier = Modifier.padding(start = 16.dp), text = "Release Date: " + movie.release_date)
+                        Row (
+                            modifier = Modifier.padding(start = 16.dp)
+                        ){
+                            RatingBar(
+                                starsModifier = Modifier.size(18.dp),
+                                rating = movie.vote_average?.div(2) ?: 0.0
+                            )
+
+                            Text(
+                                modifier = Modifier.padding(start = 4.dp),
+                                text = movie.vote_average.toString().take(3),
+                                color = Color.LightGray,
+                                fontSize = 14.sp,
+                                maxLines = 1
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Text(modifier = Modifier.padding(start = 16.dp), text = movie.vote_count.toString() + " votes")
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Text(modifier = Modifier.padding(start = 16.dp), text = "Release Date: " + movie.release_date)
+                    }
                 }
             }
-        }
-        Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
-        Text(
-            modifier = Modifier.padding(start = 16.dp),
-            text = "Overview",
-            fontSize = 19.sp,
-            fontWeight = FontWeight.SemiBold
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        detailsState.movie?.let {
             Text(
                 modifier = Modifier.padding(start = 16.dp),
-                text = it.overview,
-                fontSize = 16.sp,
+                text = "Overview",
+                fontSize = 19.sp,
+                fontWeight = FontWeight.SemiBold
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            detailsState.movie?.let {
+                Text(
+                    modifier = Modifier.padding(start = 16.dp),
+                    text = it.overview,
+                    fontSize = 16.sp,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Button(
+            onClick = {
+                detailsViewModel.addToWatchList(detailsState.movie?.toMovieEntity(Category.WATCHLIST))
+                movieListViewModel.updateWatchList(movieListState.watchList)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(16.dp)
+        ) {
+            Text(text = "Add to Watch List")
+        }
     }
 }

@@ -2,13 +2,19 @@ package com.example.mymovielibrary.movieList.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mymovielibrary.movieList.data.local.movie.MovieEntity
+import com.example.mymovielibrary.movieList.data.local.movie.WatchedMovie
 import com.example.mymovielibrary.movieList.domain.repository.MovieListRepository
 import com.example.mymovielibrary.movieList.util.Category
 import com.example.mymovielibrary.movieList.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,11 +24,19 @@ class MovieListViewModel @Inject constructor(
     private val movieListRepository: MovieListRepository
 ): ViewModel() {
     private var _movieListState = MutableStateFlow(MovieListState())
-    val movieListState = _movieListState.asStateFlow()
+    val movieListState: StateFlow<MovieListState> = _movieListState
 
     init {
+        getWatchedMovieList()
+        getWatchList()
         getPopularMovieList()
         getUpcomingMovieList()
+    }
+
+    fun updateWatchList(newWatchList: List<MovieEntity>) {
+        viewModelScope.launch {
+            _movieListState.value = _movieListState.value.copy(watchList = newWatchList)
+        }
     }
 
     fun onEvent(event: MovieListUIEvent){
@@ -126,6 +140,70 @@ class MovieListViewModel @Inject constructor(
                                     upcomingMovieList = movieListState.value.upcomingMovieList
                                             + upcomingList.shuffled(),
                                     upcomingMovieListPage = movieListState.value.upcomingMovieListPage + 1
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun getWatchedMovieList(){
+        viewModelScope.launch {
+            _movieListState.update {
+                it.copy(isLoading = true)
+            }
+
+            movieListRepository.getWatchedMovieList().collectLatest { result ->
+                when(result){
+                    is Resource.Error -> {
+                        _movieListState.update {
+                            it.copy(isLoading = false)
+                        }
+                    }
+                    is Resource.Loading -> {
+                        _movieListState.update {
+                            it.copy(isLoading = result.isLoading)
+                        }
+                    }
+                    is Resource.Success -> {
+                        result.data?.let { watchedList ->
+                            _movieListState.update {
+                                it.copy(
+                                    watchedMovieList = watchedList
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun getWatchList(){
+        viewModelScope.launch {
+            _movieListState.update {
+                it.copy(isLoading = true)
+            }
+
+            movieListRepository.getWatchList().collectLatest { result ->
+                when(result){
+                    is Resource.Error -> {
+                        _movieListState.update {
+                            it.copy(isLoading = false)
+                        }
+                    }
+                    is Resource.Loading -> {
+                        _movieListState.update {
+                            it.copy(isLoading = result.isLoading)
+                        }
+                    }
+                    is Resource.Success -> {
+                        result.data?.let { watchList ->
+                            _movieListState.update {
+                                it.copy(
+                                    watchList = watchList
                                 )
                             }
                         }
