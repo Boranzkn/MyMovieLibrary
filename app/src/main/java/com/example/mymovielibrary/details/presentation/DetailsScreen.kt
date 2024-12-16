@@ -23,6 +23,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,7 +41,6 @@ import coil.request.ImageRequest
 import coil.size.Size
 import com.example.mymovielibrary.movieList.data.mappers.toMovieEntity
 import com.example.mymovielibrary.movieList.data.remote.MovieApi
-import com.example.mymovielibrary.movieList.presentation.MovieListUIEvent
 import com.example.mymovielibrary.movieList.presentation.MovieListViewModel
 import com.example.mymovielibrary.movieList.util.Category
 import com.example.mymovielibrary.movieList.util.RatingBar
@@ -51,6 +52,12 @@ fun DetailsScreen() {
 
     val movieListViewModel = hiltViewModel<MovieListViewModel>()
     val movieListState = movieListViewModel.movieListState.collectAsState().value
+
+    val isButtonVisible = remember(detailsState.movie, movieListState.watchList) {
+        derivedStateOf {
+            detailsState.movie != null && movieListState.watchList.none { it.id == detailsState.movie.id }
+        }
+    }
 
     val backdropImageState = rememberAsyncImagePainter(
         model = ImageRequest.Builder(LocalContext.current)
@@ -152,7 +159,7 @@ fun DetailsScreen() {
                         ){
                             RatingBar(
                                 starsModifier = Modifier.size(18.dp),
-                                rating = movie.vote_average?.div(2) ?: 0.0
+                                rating = movie.vote_average.div(2)
                             )
 
                             Text(
@@ -196,17 +203,21 @@ fun DetailsScreen() {
             Spacer(modifier = Modifier.height(32.dp))
         }
 
-        Button(
-            onClick = {
-                detailsViewModel.addToWatchList(detailsState.movie?.toMovieEntity(Category.WATCHLIST))
-                movieListViewModel.updateWatchList(movieListState.watchList)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(16.dp)
-        ) {
-            Text(text = "Add to Watch List")
+        if (isButtonVisible.value) {
+            Button(
+                onClick = {
+                    if (detailsState.movie != null){
+                        detailsViewModel.addToWatchList(detailsState.movie.toMovieEntity(Category.WATCHLIST))
+                        movieListViewModel.updateWatchList(detailsState.movie.toMovieEntity(Category.WATCHLIST))
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp)
+            ) {
+                Text(text = "Add to Watch List")
+            }
         }
     }
 }

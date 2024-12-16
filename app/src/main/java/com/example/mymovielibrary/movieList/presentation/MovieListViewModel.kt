@@ -33,9 +33,10 @@ class MovieListViewModel @Inject constructor(
         getUpcomingMovieList()
     }
 
-    fun updateWatchList(newWatchList: List<MovieEntity>) {
+    fun updateWatchList(newMovie: MovieEntity) {
         viewModelScope.launch {
-            _movieListState.value = _movieListState.value.copy(watchList = newWatchList)
+            val updatedWatchList = _movieListState.value.watchList + newMovie
+            _movieListState.value = _movieListState.value.copy(watchList = updatedWatchList)
         }
     }
 
@@ -149,7 +150,7 @@ class MovieListViewModel @Inject constructor(
         }
     }
 
-    fun getWatchedMovieList(){
+    private fun getWatchedMovieList(){
         viewModelScope.launch {
             _movieListState.update {
                 it.copy(isLoading = true)
@@ -181,7 +182,7 @@ class MovieListViewModel @Inject constructor(
         }
     }
 
-    fun getWatchList(){
+    private fun getWatchList(){
         viewModelScope.launch {
             _movieListState.update {
                 it.copy(isLoading = true)
