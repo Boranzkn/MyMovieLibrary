@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mymovielibrary.movieList.data.local.movie.MovieEntity
 import com.example.mymovielibrary.movieList.data.local.movie.WatchedMovie
+import com.example.mymovielibrary.movieList.data.mappers.toMovie
 import com.example.mymovielibrary.movieList.data.mappers.toMovieEntity
 import com.example.mymovielibrary.movieList.data.remote.respond.MovieDto
 import com.example.mymovielibrary.movieList.domain.repository.MovieListRepository
@@ -22,7 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
     private val movieListRepository: MovieListRepository,
-    private val savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val movieId = savedStateHandle.get<Int>("movieId")
     private var _detailsState = MutableStateFlow(DetailsState())
@@ -39,7 +40,7 @@ class DetailsViewModel @Inject constructor(
             movieListRepository.getMovieFromApi(id).collectLatest { result ->
                 when(result){
                     is Resource.Error -> {
-                        _detailsState.update { it.copy(isLoading = false) }
+                        getMovieFromDB(id)
                     }
                     is Resource.Loading -> {
                         _detailsState.update { it.copy(isLoading = result.isLoading) }
@@ -47,6 +48,26 @@ class DetailsViewModel @Inject constructor(
                     is Resource.Success -> {
                         result.data?.let { movie ->
                             _detailsState.update { it.copy(movie = movie) }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getMovieFromDB(id: Int){
+        viewModelScope.launch {
+            movieListRepository.getWatchListMovie(id).collectLatest { result ->
+                when(result){
+                    is Resource.Error -> {
+                        _detailsState.update { it.copy(isLoading = false) }
+                    }
+                    is Resource.Loading -> {
+                        _detailsState.update { it.copy(isLoading = result.isLoading) }
+                    }
+                    is Resource.Success -> {
+                        result.data?.let { movie ->
+                            _detailsState.update { it.copy(movie = movie.toMovie(Category.WATCHLIST)) }
                         }
                     }
                 }
