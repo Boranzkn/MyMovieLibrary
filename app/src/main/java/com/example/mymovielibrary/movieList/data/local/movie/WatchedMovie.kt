@@ -6,14 +6,22 @@ import com.example.mymovielibrary.movieList.util.Category
 
 @Entity
 data class WatchedMovie(
+    val adult: Boolean,
     val backdrop_path: String,
+    val genre_ids: String,
+    val original_language: String,
+    val original_title: String,
     val overview: String,
+    val popularity: Double,
     val poster_path: String,
     val release_date: String,
     val title: String,
+    val video: Boolean,
     val vote_average: Double,
     val vote_count: Int,
     val category: String = Category.WATCHED,
+    val rating: Int,
+    val review: String,
 
     @PrimaryKey
     val id: Int

@@ -1,4 +1,4 @@
-package com.example.mymovielibrary.details.presentation
+package com.example.mymovielibrary.details.watched.presentation
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,14 +17,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ImageNotSupported
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,36 +36,26 @@ import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
-import com.example.mymovielibrary.movieList.data.mappers.toMovieEntity
+import com.example.mymovielibrary.details.presentation.DetailsViewModel
 import com.example.mymovielibrary.movieList.data.remote.MovieApi
 import com.example.mymovielibrary.movieList.presentation.MovieListViewModel
-import com.example.mymovielibrary.movieList.util.Category
 import com.example.mymovielibrary.movieList.util.RatingBar
 
 @Composable
-fun DetailsScreen() {
-    val detailsViewModel = hiltViewModel<DetailsViewModel>()
-    val detailsState = detailsViewModel.detailsState.collectAsState().value
-
-    val movieListViewModel = hiltViewModel<MovieListViewModel>()
-    val movieListState = movieListViewModel.movieListState.collectAsState().value
-
-    val isButtonVisible = remember(detailsState.movie, movieListState.watchList) {
-        derivedStateOf {
-            detailsState.movie != null && movieListState.watchList.none { it.id == detailsState.movie.id }
-        }
-    }
+fun WatchedDetailsScreen() {
+    val watchedDetailsViewModel = hiltViewModel<WatchedDetailsViewModel>()
+    val watchedDetailsState = watchedDetailsViewModel.watchedDetailsState.collectAsState().value
 
     val backdropImageState = rememberAsyncImagePainter(
         model = ImageRequest.Builder(LocalContext.current)
-            .data(MovieApi.IMAGE_BASE_URL + detailsState.movie?.backdrop_path)
+            .data(MovieApi.IMAGE_BASE_URL + watchedDetailsState.movie?.backdrop_path)
             .size(Size.ORIGINAL)
             .build()
     ).state
 
     val posterImageState = rememberAsyncImagePainter(
         model = ImageRequest.Builder(LocalContext.current)
-            .data(MovieApi.IMAGE_BASE_URL + detailsState.movie?.poster_path)
+            .data(MovieApi.IMAGE_BASE_URL + watchedDetailsState.movie?.poster_path)
             .size(Size.ORIGINAL)
             .build()
     ).state
@@ -90,7 +77,7 @@ fun DetailsScreen() {
                     Icon(
                         modifier = Modifier.size(70.dp),
                         imageVector = Icons.Rounded.ImageNotSupported,
-                        contentDescription = detailsState.movie?.title
+                        contentDescription = watchedDetailsState.movie?.title
                     )
                 }
             }
@@ -101,7 +88,7 @@ fun DetailsScreen() {
                         .fillMaxWidth()
                         .height(220.dp),
                     painter = backdropImageState.painter,
-                    contentDescription = detailsState.movie?.title,
+                    contentDescription = watchedDetailsState.movie?.title,
                     contentScale = ContentScale.Crop
                 )
             }
@@ -129,7 +116,7 @@ fun DetailsScreen() {
                             Icon(
                                 modifier = Modifier.size(70.dp),
                                 imageVector = Icons.Rounded.ImageNotSupported,
-                                contentDescription = detailsState.movie?.title
+                                contentDescription = watchedDetailsState.movie?.title
                             )
                         }
                     }
@@ -140,13 +127,13 @@ fun DetailsScreen() {
                                 .fillMaxSize()
                                 .clip(RoundedCornerShape(12.dp)),
                             painter = posterImageState.painter,
-                            contentDescription = detailsState.movie?.title,
+                            contentDescription = watchedDetailsState.movie?.title,
                             contentScale = ContentScale.Crop
                         )
                     }
                 }
 
-                detailsState.movie?.let {movie ->
+                watchedDetailsState.movie?.let {movie ->
                     Column(
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -185,39 +172,22 @@ fun DetailsScreen() {
 
             Text(
                 modifier = Modifier.padding(start = 16.dp),
-                text = "Overview",
+                text = "Review",
                 fontSize = 19.sp,
                 fontWeight = FontWeight.SemiBold
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            detailsState.movie?.let {
+            watchedDetailsState.movie?.let {
                 Text(
                     modifier = Modifier.padding(start = 16.dp),
-                    text = it.overview,
+                    text = it.review,
                     fontSize = 16.sp,
                 )
             }
 
             Spacer(modifier = Modifier.height(32.dp))
-        }
-
-        if (isButtonVisible.value) {
-            Button(
-                onClick = {
-                    if (detailsState.movie != null){
-                        detailsViewModel.addToWatchList(detailsState.movie.toMovieEntity(Category.WATCHLIST))
-                        movieListViewModel.updateWatchList(detailsState.movie.toMovieEntity(Category.WATCHLIST))
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter)
-                    .padding(16.dp)
-            ) {
-                Text(text = "Add to Watch List")
-            }
         }
     }
 }

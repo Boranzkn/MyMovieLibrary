@@ -9,19 +9,22 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.mymovielibrary.movieList.presentation.component.MovieItem
-import com.example.mymovielibrary.movieList.presentation.component.WatchedMovieItem
-import com.example.mymovielibrary.movieList.util.Category
+import com.example.mymovielibrary.details.watched.presentation.component.WatchedMovieItem
+import com.example.mymovielibrary.movieList.data.mappers.toMovie
 
 @Composable
 fun WatchedMoviesScreen(
-    movieListState: MovieListState,
     navController: NavHostController
 ) {
+    val viewModel: MovieListViewModel = hiltViewModel()
+    val movieListState = viewModel.movieListState.collectAsState().value
+
     if (movieListState.watchedMovieList.isEmpty()){
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
             CircularProgressIndicator()
@@ -35,7 +38,7 @@ fun WatchedMoviesScreen(
         ) {
             items(movieListState.watchedMovieList.size){index ->
                 WatchedMovieItem(
-                    movie = movieListState.watchedMovieList[index],
+                    movie = movieListState.watchedMovieList[index].toMovie(),
                     navHostController =  navController
                 )
 

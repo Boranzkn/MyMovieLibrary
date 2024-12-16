@@ -81,7 +81,7 @@ fun HomeScreen(navController: NavHostController) {
         Box(modifier = Modifier.fillMaxSize().padding(it)){
             NavHost(navController = bottomNavController, startDestination = Screen.Watched.rout) {
                 composable(Screen.Watched.rout){
-                    WatchedMoviesScreen(movieListState, navController)
+                    WatchedMoviesScreen(navController)
                 }
                 composable(Screen.WatchList.rout){
                     WatchListScreen(navController)

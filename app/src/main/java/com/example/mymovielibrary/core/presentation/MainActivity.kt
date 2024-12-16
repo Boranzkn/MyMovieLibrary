@@ -16,6 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.mymovielibrary.details.presentation.DetailsScreen
+import com.example.mymovielibrary.details.watched.presentation.WatchedDetailsScreen
 import com.example.mymovielibrary.movieList.util.Screen
 import com.example.mymovielibrary.ui.theme.MyMovieLibraryTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -47,6 +48,13 @@ class MainActivity : ComponentActivity() {
                         )
                         ){
                             DetailsScreen()
+                        }
+
+                        composable(Screen.WatchedDetails.rout + "/{movieId}", arguments = listOf(
+                            navArgument("movieId") {type = NavType.IntType}
+                        )
+                        ){
+                            WatchedDetailsScreen()
                         }
                     }
                 }

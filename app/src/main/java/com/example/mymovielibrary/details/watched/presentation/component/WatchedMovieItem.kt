@@ -1,4 +1,4 @@
-package com.example.mymovielibrary.movieList.presentation.component
+package com.example.mymovielibrary.details.watched.presentation.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -49,7 +49,7 @@ import com.example.mymovielibrary.movieList.util.getAverageColor
 
 @Composable
 fun WatchedMovieItem(
-    movie: WatchedMovie,
+    movie: Movie,
     navHostController: NavHostController
 ) {
     val imageState = rememberAsyncImagePainter(
@@ -79,7 +79,7 @@ fun WatchedMovieItem(
                 )
             )
             .clickable {
-                navHostController.navigate(Screen.Details.rout + "/${movie.id}")
+                navHostController.navigate(Screen.WatchedDetails.rout + "/${movie.id}")
             }
     ) {
         if (imageState is AsyncImagePainter.State.Error) {
