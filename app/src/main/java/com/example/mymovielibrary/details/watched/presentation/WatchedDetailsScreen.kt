@@ -179,10 +179,10 @@ fun WatchedDetailsScreen() {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            watchedDetailsState.movie?.let {
+            if (watchedDetailsState.movie != null){
                 Text(
                     modifier = Modifier.padding(start = 16.dp),
-                    text = it.review,
+                    text = watchedDetailsState.movie.overview,
                     fontSize = 16.sp,
                 )
             }

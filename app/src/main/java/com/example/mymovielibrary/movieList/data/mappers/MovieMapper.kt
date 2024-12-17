@@ -110,3 +110,27 @@ fun WatchedMovie.toMovie(): Movie {
         genre_ids = emptyList()
     )
 }
+
+fun Movie.toWatchedMovie(): WatchedMovie {
+    return WatchedMovie(
+        backdrop_path = backdrop_path,
+        original_language = original_language,
+        overview = overview,
+        poster_path = poster_path,
+        release_date = release_date,
+        title = title,
+        vote_average = vote_average,
+        popularity = popularity,
+        vote_count = vote_count,
+        video = video,
+        id = id,
+        adult = adult,
+        original_title = original_title,
+        genre_ids = "",
+
+        category = category,
+
+        review = null,
+        rating = null
+    )
+}

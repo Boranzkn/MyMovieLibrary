@@ -33,10 +33,42 @@ class MovieListViewModel @Inject constructor(
         getUpcomingMovieList()
     }
 
-    fun updateWatchList(newMovie: MovieEntity) {
+    fun addToWatchList(newMovie: MovieEntity) {
         viewModelScope.launch {
             val updatedWatchList = _movieListState.value.watchList + newMovie
             _movieListState.value = _movieListState.value.copy(watchList = updatedWatchList)
+        }
+    }
+
+    fun addToWatchedMovieList(newMovie: WatchedMovie) {
+        viewModelScope.launch {
+            val updatedWatchedMovieList = _movieListState.value.watchedMovieList + newMovie
+            _movieListState.value = _movieListState.value.copy(watchedMovieList = updatedWatchedMovieList)
+        }
+    }
+
+    fun removeFromWatchList(id: Int) {
+        viewModelScope.launch {
+            movieListRepository.getWatchListMovie(id).collectLatest { result ->
+                when(result){
+                    is Resource.Error -> {
+                        _movieListState.update {
+                            it.copy(isLoading = false)
+                        }
+                    }
+                    is Resource.Loading -> {
+                        _movieListState.update {
+                            it.copy(isLoading = result.isLoading)
+                        }
+                    }
+                    is Resource.Success -> {
+                        if (result.data != null){
+                            val updatedWatchList = _movieListState.value.watchList - result.data
+                            _movieListState.value = _movieListState.value.copy(watchList = updatedWatchList)
+                        }
+                    }
+                }
+            }
         }
     }
 

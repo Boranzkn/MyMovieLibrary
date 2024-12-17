@@ -22,8 +22,8 @@ import com.example.mymovielibrary.movieList.data.mappers.toMovie
 fun WatchedMoviesScreen(
     navController: NavHostController
 ) {
-    val viewModel: MovieListViewModel = hiltViewModel()
-    val movieListState = viewModel.movieListState.collectAsState().value
+    val movieListViewModel = hiltViewModel<MovieListViewModel>()
+    val movieListState = movieListViewModel.movieListState.collectAsState().value
 
     if (movieListState.watchedMovieList.isEmpty()){
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){

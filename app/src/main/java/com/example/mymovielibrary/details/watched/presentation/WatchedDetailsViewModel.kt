@@ -55,14 +55,6 @@ class WatchedDetailsViewModel @Inject constructor(
         }
     }
 
-    fun addToWatchList(movie: MovieEntity?){
-        viewModelScope.launch{
-            movie?.let {
-                movieListRepository.setMovieToWatchList(movie)
-            }
-        }
-    }
-
     fun addToWatched(movie: WatchedMovie?){
         viewModelScope.launch{
             movie?.let {

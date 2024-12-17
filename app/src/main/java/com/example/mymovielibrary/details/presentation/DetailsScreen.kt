@@ -39,7 +39,9 @@ import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
+import com.example.mymovielibrary.details.watched.presentation.WatchedDetailsViewModel
 import com.example.mymovielibrary.movieList.data.mappers.toMovieEntity
+import com.example.mymovielibrary.movieList.data.mappers.toWatchedMovie
 import com.example.mymovielibrary.movieList.data.remote.MovieApi
 import com.example.mymovielibrary.movieList.presentation.MovieListViewModel
 import com.example.mymovielibrary.movieList.util.Category
@@ -50,12 +52,20 @@ fun DetailsScreen() {
     val detailsViewModel = hiltViewModel<DetailsViewModel>()
     val detailsState = detailsViewModel.detailsState.collectAsState().value
 
+    val watchedDetailsViewModel = hiltViewModel<WatchedDetailsViewModel>()
+
     val movieListViewModel = hiltViewModel<MovieListViewModel>()
     val movieListState = movieListViewModel.movieListState.collectAsState().value
 
-    val isButtonVisible = remember(detailsState.movie, movieListState.watchList) {
+    val isInWatchList = remember(detailsState.movie, movieListState.watchList) {
         derivedStateOf {
-            detailsState.movie != null && movieListState.watchList.none { it.id == detailsState.movie.id }
+            detailsState.movie != null && movieListState.watchList.any { it.id == detailsState.movie.id }
+        }
+    }
+
+    val isInWatchedMovieList = remember(detailsState.movie, movieListState.watchedMovieList) {
+        derivedStateOf {
+            detailsState.movie != null && movieListState.watchedMovieList.any { it.id == detailsState.movie.id }
         }
     }
 
@@ -73,7 +83,7 @@ fun DetailsScreen() {
             .build()
     ).state
 
-    Box(modifier = Modifier.fillMaxSize()){
+    Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -146,22 +156,17 @@ fun DetailsScreen() {
                     }
                 }
 
-                detailsState.movie?.let {movie ->
+                detailsState.movie?.let { movie ->
                     Column(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(modifier = Modifier.padding(start = 16.dp), text = movie.title, fontSize = 19.sp, fontWeight = FontWeight.SemiBold)
-
                         Spacer(modifier = Modifier.height(16.dp))
-
-                        Row (
-                            modifier = Modifier.padding(start = 16.dp)
-                        ){
+                        Row(modifier = Modifier.padding(start = 16.dp)) {
                             RatingBar(
                                 starsModifier = Modifier.size(18.dp),
                                 rating = movie.vote_average.div(2)
                             )
-
                             Text(
                                 modifier = Modifier.padding(start = 4.dp),
                                 text = movie.vote_average.toString().take(3),
@@ -170,53 +175,70 @@ fun DetailsScreen() {
                                 maxLines = 1
                             )
                         }
-
                         Spacer(modifier = Modifier.height(10.dp))
-
                         Text(modifier = Modifier.padding(start = 16.dp), text = movie.vote_count.toString() + " votes")
-
                         Spacer(modifier = Modifier.height(10.dp))
-
                         Text(modifier = Modifier.padding(start = 16.dp), text = "Release Date: " + movie.release_date)
                     }
                 }
             }
+
             Spacer(modifier = Modifier.height(32.dp))
-
-            Text(
-                modifier = Modifier.padding(start = 16.dp),
-                text = "Overview",
-                fontSize = 19.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-
+            Text(modifier = Modifier.padding(start = 16.dp), text = "Overview", fontSize = 19.sp, fontWeight = FontWeight.SemiBold)
             Spacer(modifier = Modifier.height(8.dp))
-
             detailsState.movie?.let {
-                Text(
-                    modifier = Modifier.padding(start = 16.dp),
-                    text = it.overview,
-                    fontSize = 16.sp,
-                )
+                Text(modifier = Modifier.padding(start = 16.dp), text = it.overview, fontSize = 16.sp)
             }
-
             Spacer(modifier = Modifier.height(32.dp))
         }
 
-        if (isButtonVisible.value) {
-            Button(
-                onClick = {
-                    if (detailsState.movie != null){
-                        detailsViewModel.addToWatchList(detailsState.movie.toMovieEntity(Category.WATCHLIST))
-                        movieListViewModel.updateWatchList(detailsState.movie.toMovieEntity(Category.WATCHLIST))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .align(Alignment.BottomCenter)
+        ) {
+            detailsState.movie?.let { movie ->
+                when {
+                    isInWatchedMovieList.value -> {
+                        // No buttons if already watched
                     }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter)
-                    .padding(16.dp)
-            ) {
-                Text(text = "Add to Watch List")
+                    isInWatchList.value -> {
+                        Button(
+                            onClick = {
+                                detailsViewModel.removeFromWatchList(movie.id)
+                                movieListViewModel.removeFromWatchList(movie.id)
+                                detailsViewModel.addToWatchedMovieList(movie.toWatchedMovie())
+                                movieListViewModel.addToWatchedMovieList(movie.toWatchedMovie())
+                            },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(text = "Watched")
+                        }
+                    }
+                    else -> {
+                        Button(
+                            onClick = {
+                                detailsViewModel.addToWatchList(movie.toMovieEntity(Category.WATCHLIST))
+                                movieListViewModel.addToWatchList(movie.toMovieEntity(Category.WATCHLIST))
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(end = 8.dp)
+                        ) {
+                            Text(text = "Add to Watch List")
+                        }
+                        Button(
+                            onClick = {
+                                watchedDetailsViewModel.addToWatched(movie.toWatchedMovie())
+                                movieListViewModel.addToWatchedMovieList(movie.toWatchedMovie())
+                            },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(text = "Watched")
+                        }
+                    }
+                }
             }
         }
     }

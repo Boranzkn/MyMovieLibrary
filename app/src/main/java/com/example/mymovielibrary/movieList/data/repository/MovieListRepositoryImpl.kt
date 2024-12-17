@@ -179,4 +179,8 @@ class MovieListRepositoryImpl @Inject constructor(
         movieDatabase.movieDao.upsertMovieToWatched(movie)
     }
 
+    override suspend fun deleteMovieFromWatchListById(id: Int) {
+        movieDatabase.movieDao.deleteMovieFromWatchListById(id)
+    }
+
 }

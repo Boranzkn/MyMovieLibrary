@@ -20,8 +20,8 @@ data class WatchedMovie(
     val vote_average: Double,
     val vote_count: Int,
     val category: String = Category.WATCHED,
-    val rating: Int,
-    val review: String,
+    val rating: Int?,
+    val review: String?,
 
     @PrimaryKey
     val id: Int

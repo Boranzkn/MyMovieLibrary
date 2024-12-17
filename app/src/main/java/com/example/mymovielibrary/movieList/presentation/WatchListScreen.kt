@@ -25,8 +25,8 @@ import kotlin.reflect.KFunction2
 fun WatchListScreen(
     navController: NavHostController
 ) {
-    val viewModel: MovieListViewModel = hiltViewModel()
-    val movieListState = viewModel.movieListState.collectAsState().value
+    val movieListViewModel = hiltViewModel<MovieListViewModel>()
+    val movieListState = movieListViewModel.movieListState.collectAsState().value
 
     if (movieListState.watchList.isEmpty()){
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){

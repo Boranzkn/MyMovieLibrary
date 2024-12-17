@@ -75,19 +75,21 @@ class DetailsViewModel @Inject constructor(
         }
     }
 
-    fun addToWatchList(movie: MovieEntity?){
+    fun addToWatchList(movie: MovieEntity){
         viewModelScope.launch{
-            movie?.let {
-                movieListRepository.setMovieToWatchList(movie)
-            }
+            movieListRepository.setMovieToWatchList(movie)
         }
     }
 
-    fun addToWatched(movie: WatchedMovie?){
+    fun addToWatchedMovieList(movie: WatchedMovie){
         viewModelScope.launch{
-            movie?.let {
-                movieListRepository.setMovieToWatched(movie)
-            }
+            movieListRepository.setMovieToWatched(movie)
+        }
+    }
+
+    fun removeFromWatchList(id: Int) {
+        viewModelScope.launch{
+            movieListRepository.deleteMovieFromWatchListById(id)
         }
     }
 }

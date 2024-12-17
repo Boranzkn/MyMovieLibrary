@@ -23,4 +23,7 @@ interface MovieDao {
 
     @Query("SELECT * FROM WatchedMovie")
     suspend fun getWatchedMovieList(): List<WatchedMovie>
+
+    @Query("DELETE FROM MovieEntity WHERE id = :id")
+    suspend fun deleteMovieFromWatchListById(id: Int)
 }
