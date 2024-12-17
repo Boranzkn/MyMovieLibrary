@@ -111,7 +111,7 @@ fun WatchedMovie.toMovie(): Movie {
     )
 }
 
-fun Movie.toWatchedMovie(): WatchedMovie {
+fun Movie.toWatchedMovie(review: String, rating: Float): WatchedMovie {
     return WatchedMovie(
         backdrop_path = backdrop_path,
         original_language = original_language,
@@ -130,7 +130,7 @@ fun Movie.toWatchedMovie(): WatchedMovie {
 
         category = category,
 
-        review = null,
-        rating = null
+        review = review,
+        rating = rating
     )
 }

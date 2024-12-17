@@ -54,12 +54,4 @@ class WatchedDetailsViewModel @Inject constructor(
             }
         }
     }
-
-    fun addToWatched(movie: WatchedMovie?){
-        viewModelScope.launch{
-            movie?.let {
-                movieListRepository.setMovieToWatched(movie)
-            }
-        }
-    }
 }

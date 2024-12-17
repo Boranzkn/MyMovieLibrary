@@ -14,9 +14,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ImageNotSupported
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -24,7 +26,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,10 +57,13 @@ fun DetailsScreen() {
     val detailsViewModel = hiltViewModel<DetailsViewModel>()
     val detailsState = detailsViewModel.detailsState.collectAsState().value
 
-    val watchedDetailsViewModel = hiltViewModel<WatchedDetailsViewModel>()
-
     val movieListViewModel = hiltViewModel<MovieListViewModel>()
     val movieListState = movieListViewModel.movieListState.collectAsState().value
+
+    var showRatingDialog by remember { mutableStateOf(false) }
+    var userRating by remember { mutableStateOf(0f) }
+    var userReview by remember { mutableStateOf("") }
+    var deleteFromWatchlist by remember { mutableStateOf(false) }
 
     val isInWatchList = remember(detailsState.movie, movieListState.watchList) {
         derivedStateOf {
@@ -206,10 +214,8 @@ fun DetailsScreen() {
                     isInWatchList.value -> {
                         Button(
                             onClick = {
-                                detailsViewModel.removeFromWatchList(movie.id)
-                                movieListViewModel.removeFromWatchList(movie.id)
-                                detailsViewModel.addToWatchedMovieList(movie.toWatchedMovie())
-                                movieListViewModel.addToWatchedMovieList(movie.toWatchedMovie())
+                                deleteFromWatchlist = true
+                                showRatingDialog = true
                             },
                             modifier = Modifier.weight(1f)
                         ) {
@@ -230,8 +236,7 @@ fun DetailsScreen() {
                         }
                         Button(
                             onClick = {
-                                watchedDetailsViewModel.addToWatched(movie.toWatchedMovie())
-                                movieListViewModel.addToWatchedMovieList(movie.toWatchedMovie())
+                                showRatingDialog = true
                             },
                             modifier = Modifier.weight(1f)
                         ) {
@@ -240,6 +245,62 @@ fun DetailsScreen() {
                     }
                 }
             }
+        }
+
+        if (showRatingDialog) {
+            AlertDialog(
+                onDismissRequest = { showRatingDialog = false },
+                title = { Text("Rate and Review") },
+                text = {
+                    Column {
+                        Text("Rate:")
+                        Spacer(modifier = Modifier.height(8.dp))
+                        RatingBar(
+                            starsModifier = Modifier.size(24.dp),
+                            rating = userRating.toDouble(),
+                            onRatingChanged = { rating -> userRating = rating.toFloat() }
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text("Review:")
+                        BasicTextField(
+                            value = userReview,
+                            onValueChange = { userReview = it },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(100.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(MaterialTheme.colorScheme.primaryContainer)
+                                .padding(8.dp),
+                            singleLine = false
+                        )
+                    }
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            if (deleteFromWatchlist){
+                                detailsViewModel.removeFromWatchList(detailsState.movie!!.id)
+                                movieListViewModel.removeFromWatchList(detailsState.movie.id)
+                                deleteFromWatchlist = false
+                            }
+
+                            detailsViewModel.addToWatchedMovieList(detailsState.movie!!.toWatchedMovie(userReview, userRating))
+                            movieListViewModel.addToWatchedMovieList(detailsState.movie.toWatchedMovie(userReview, userRating))
+                            showRatingDialog = false
+                        }
+                    ) {
+                        Text("Submit")
+                    }
+                },
+                dismissButton = {
+                    Button(onClick = {
+                        deleteFromWatchlist = false
+                        showRatingDialog = false
+                    }) {
+                        Text("Cancel")
+                    }
+                }
+            )
         }
     }
 }

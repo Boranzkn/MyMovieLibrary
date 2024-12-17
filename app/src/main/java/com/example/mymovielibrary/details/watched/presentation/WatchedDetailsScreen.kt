@@ -168,26 +168,62 @@ fun WatchedDetailsScreen() {
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(32.dp))
 
-            Text(
-                modifier = Modifier.padding(start = 16.dp),
-                text = "Review",
-                fontSize = 19.sp,
-                fontWeight = FontWeight.SemiBold
-            )
+            Spacer(modifier = Modifier.height(16.dp))
 
-            Spacer(modifier = Modifier.height(8.dp))
+            if (watchedDetailsState.movie != null && watchedDetailsState.movie.rating >= 0f){
+                Row (modifier = Modifier.padding(start = 16.dp)){
+                    Text(
+                        text = "Your Rating: ",
+                        fontSize = 19.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
 
-            if (watchedDetailsState.movie != null){
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    RatingBar(
+                        starsModifier = Modifier.size(24.dp).align(Alignment.CenterVertically),
+                        rating = watchedDetailsState.movie.rating.toDouble()
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            if (watchedDetailsState.movie != null && watchedDetailsState.movie.review != ""){
                 Text(
                     modifier = Modifier.padding(start = 16.dp),
-                    text = watchedDetailsState.movie.overview,
+                    text = "Review",
+                    fontSize = 19.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    modifier = Modifier.padding(start = 16.dp),
+                    text = watchedDetailsState.movie.review,
                     fontSize = 16.sp,
                 )
             }
+            else{
+                Text(
+                    modifier = Modifier.padding(start = 16.dp),
+                    text = "Overview",
+                    fontSize = 19.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
 
-            Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(8.dp))
+
+                watchedDetailsState.movie?.let {
+                    Text(
+                        modifier = Modifier.padding(start = 16.dp),
+                        text = it.overview,
+                        fontSize = 16.sp,
+                    )
+                }
+            }
         }
     }
 }
