@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.List
+import androidx.compose.material.icons.automirrored.rounded.ManageSearch
 import androidx.compose.material.icons.rounded.Movie
 import androidx.compose.material.icons.rounded.MovieFilter
 import androidx.compose.material.icons.rounded.Upcoming
@@ -40,6 +41,7 @@ import com.example.mymovielibrary.movieList.presentation.UpcomingMoviesScreen
 import com.example.mymovielibrary.movieList.presentation.WatchListScreen
 import com.example.mymovielibrary.movieList.presentation.WatchedMoviesScreen
 import com.example.mymovielibrary.movieList.util.Screen
+import com.example.mymovielibrary.search.peresentation.SearchListScreen
 import kotlin.reflect.KFunction2
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,7 +66,10 @@ fun HomeScreen(navController: NavHostController) {
                         else if (movieListState.currentScreenIndex == 1){
                             "Watch List"
                         }
-                        else if (movieListState.currentScreenIndex == 2) {
+                        else if (movieListState.currentScreenIndex == 2){
+                            "Search"
+                        }
+                        else if (movieListState.currentScreenIndex == 3) {
                             "Popular Movies"
                         }
                         else {
@@ -85,6 +90,9 @@ fun HomeScreen(navController: NavHostController) {
                 }
                 composable(Screen.WatchList.rout){
                     WatchListScreen(navController)
+                }
+                composable(Screen.Search.rout){
+                    SearchListScreen(navController)
                 }
                 composable(Screen.PopularMovieList.rout){
                     PopularMoviesScreen(movieListState, navController, movieListViewModel::onEvent)
@@ -107,6 +115,10 @@ fun BottomNavigationBar(bottomNavController: NavHostController, onEvent: (MovieL
         BottomItem(
             title = "Watch List",
             icon = Icons.AutoMirrored.Rounded.List
+        ),
+        BottomItem(
+            title = "Search",
+            icon = Icons.AutoMirrored.Rounded.ManageSearch
         ),
         BottomItem(
             title = "Popular",
@@ -143,9 +155,14 @@ fun BottomNavigationBar(bottomNavController: NavHostController, onEvent: (MovieL
                             2 -> {
                                 onEvent(MovieListUIEvent.Navigate(2))
                                 bottomNavController.popBackStack()
-                                bottomNavController.navigate(Screen.PopularMovieList.rout)
+                                bottomNavController.navigate(Screen.Search.rout)
                             }
                             3 -> {
+                                onEvent(MovieListUIEvent.Navigate(2))
+                                bottomNavController.popBackStack()
+                                bottomNavController.navigate(Screen.PopularMovieList.rout)
+                            }
+                            4 -> {
                                 onEvent(MovieListUIEvent.Navigate(3))
                                 bottomNavController.popBackStack()
                                 bottomNavController.navigate(Screen.UpcomingMovieList.rout)

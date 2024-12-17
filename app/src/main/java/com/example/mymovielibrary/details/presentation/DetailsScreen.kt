@@ -37,7 +37,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImagePainter
@@ -51,6 +50,7 @@ import com.example.mymovielibrary.movieList.data.remote.MovieApi
 import com.example.mymovielibrary.movieList.presentation.MovieListViewModel
 import com.example.mymovielibrary.movieList.util.Category
 import com.example.mymovielibrary.movieList.util.RatingBar
+import androidx.compose.ui.unit.dp as dp
 
 @Composable
 fun DetailsScreen() {
@@ -195,7 +195,7 @@ fun DetailsScreen() {
             Text(modifier = Modifier.padding(start = 16.dp), text = "Overview", fontSize = 19.sp, fontWeight = FontWeight.SemiBold)
             Spacer(modifier = Modifier.height(8.dp))
             detailsState.movie?.let {
-                Text(modifier = Modifier.padding(start = 16.dp), text = it.overview, fontSize = 16.sp)
+                Text(modifier = Modifier.padding(start = 16.dp, end = 16.dp), text = it.overview, fontSize = 16.sp)
             }
             Spacer(modifier = Modifier.height(32.dp))
         }
@@ -254,14 +254,19 @@ fun DetailsScreen() {
                 text = {
                     Column {
                         Text("Rate:")
+
                         Spacer(modifier = Modifier.height(8.dp))
+
                         RatingBar(
                             starsModifier = Modifier.size(24.dp),
                             rating = userRating.toDouble(),
                             onRatingChanged = { rating -> userRating = rating.toFloat() }
                         )
+
                         Spacer(modifier = Modifier.height(16.dp))
+
                         Text("Review:")
+
                         BasicTextField(
                             value = userReview,
                             onValueChange = { userReview = it },

@@ -36,9 +36,7 @@ import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
-import com.example.mymovielibrary.details.presentation.DetailsViewModel
 import com.example.mymovielibrary.movieList.data.remote.MovieApi
-import com.example.mymovielibrary.movieList.presentation.MovieListViewModel
 import com.example.mymovielibrary.movieList.util.RatingBar
 
 @Composable
@@ -171,7 +169,7 @@ fun WatchedDetailsScreen() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            if (watchedDetailsState.movie != null && watchedDetailsState.movie.rating >= 0f){
+            if (watchedDetailsState.movie != null && watchedDetailsState.movie.rating > 0f){
                 Row (modifier = Modifier.padding(start = 16.dp)){
                     Text(
                         text = "Your Rating: ",
@@ -201,7 +199,7 @@ fun WatchedDetailsScreen() {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    modifier = Modifier.padding(start = 16.dp),
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp),
                     text = watchedDetailsState.movie.review,
                     fontSize = 16.sp,
                 )
@@ -218,7 +216,7 @@ fun WatchedDetailsScreen() {
 
                 watchedDetailsState.movie?.let {
                     Text(
-                        modifier = Modifier.padding(start = 16.dp),
+                        modifier = Modifier.padding(start = 16.dp, end = 16.dp),
                         text = it.overview,
                         fontSize = 16.sp,
                     )
