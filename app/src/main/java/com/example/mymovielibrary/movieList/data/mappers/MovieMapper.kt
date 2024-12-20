@@ -12,10 +12,10 @@ fun MovieDto.toMovieEntity(
         adult = adult ?: false,
         backdrop_path = backdrop_path ?: "",
         original_language = original_language ?: "",
-        overview = overview ?: "",
+        overview = overview,
         poster_path = poster_path ?: "",
         release_date = release_date ?: "",
-        title = title ?: "",
+        title = title,
         vote_average = vote_average ?: 0.0,
         popularity = popularity ?: 0.0,
         vote_count = vote_count ?: 0,
@@ -89,29 +89,7 @@ fun Movie.toMovieEntity(
     )
 }
 
-fun WatchedMovie.toMovie(): Movie {
-    return Movie(
-        backdrop_path = backdrop_path,
-        original_language = original_language,
-        overview = overview,
-        poster_path = poster_path,
-        release_date = release_date,
-        title = title,
-        vote_average = vote_average,
-        popularity = popularity,
-        vote_count = vote_count,
-        video = video,
-        id = id,
-        adult = adult,
-        original_title = original_title,
-
-        category = category,
-
-        genre_ids = emptyList()
-    )
-}
-
-fun Movie.toWatchedMovie(review: String, rating: Float): WatchedMovie {
+fun Movie.toWatchedMovie(review: String, rating: Double): WatchedMovie {
     return WatchedMovie(
         backdrop_path = backdrop_path,
         original_language = original_language,

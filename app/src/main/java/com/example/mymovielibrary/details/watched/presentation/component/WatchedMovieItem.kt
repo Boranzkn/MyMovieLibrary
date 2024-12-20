@@ -120,7 +120,7 @@ fun WatchedMovieItem(
                     if(movie.rating > 0f){
                         RatingBar(
                             starsModifier = Modifier.size(18.dp),
-                            rating = movie.rating.toDouble()
+                            rating = movie.rating
                         )
                     }
                     else{

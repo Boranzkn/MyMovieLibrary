@@ -14,14 +14,24 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.rounded.ImageNotSupported
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,16 +54,18 @@ fun WatchedDetailsScreen() {
     val watchedDetailsViewModel = hiltViewModel<WatchedDetailsViewModel>()
     val watchedDetailsState = watchedDetailsViewModel.watchedDetailsState.collectAsState().value
 
+    var showRatingDialog by remember { mutableStateOf(false) }
+
     val backdropImageState = rememberAsyncImagePainter(
         model = ImageRequest.Builder(LocalContext.current)
-            .data(MovieApi.IMAGE_BASE_URL + watchedDetailsState.movie?.backdrop_path)
+            .data(MovieApi.IMAGE_BASE_URL + watchedDetailsState.movie.backdrop_path)
             .size(Size.ORIGINAL)
             .build()
     ).state
 
     val posterImageState = rememberAsyncImagePainter(
         model = ImageRequest.Builder(LocalContext.current)
-            .data(MovieApi.IMAGE_BASE_URL + watchedDetailsState.movie?.poster_path)
+            .data(MovieApi.IMAGE_BASE_URL + watchedDetailsState.movie.poster_path)
             .size(Size.ORIGINAL)
             .build()
     ).state
@@ -75,7 +87,7 @@ fun WatchedDetailsScreen() {
                     Icon(
                         modifier = Modifier.size(70.dp),
                         imageVector = Icons.Rounded.ImageNotSupported,
-                        contentDescription = watchedDetailsState.movie?.title
+                        contentDescription = watchedDetailsState.movie.title
                     )
                 }
             }
@@ -86,7 +98,7 @@ fun WatchedDetailsScreen() {
                         .fillMaxWidth()
                         .height(220.dp),
                     painter = backdropImageState.painter,
-                    contentDescription = watchedDetailsState.movie?.title,
+                    contentDescription = watchedDetailsState.movie.title,
                     contentScale = ContentScale.Crop
                 )
             }
@@ -114,7 +126,7 @@ fun WatchedDetailsScreen() {
                             Icon(
                                 modifier = Modifier.size(70.dp),
                                 imageVector = Icons.Rounded.ImageNotSupported,
-                                contentDescription = watchedDetailsState.movie?.title
+                                contentDescription = watchedDetailsState.movie.title
                             )
                         }
                     }
@@ -125,51 +137,49 @@ fun WatchedDetailsScreen() {
                                 .fillMaxSize()
                                 .clip(RoundedCornerShape(12.dp)),
                             painter = posterImageState.painter,
-                            contentDescription = watchedDetailsState.movie?.title,
+                            contentDescription = watchedDetailsState.movie.title,
                             contentScale = ContentScale.Crop
                         )
                     }
                 }
 
-                watchedDetailsState.movie?.let {movie ->
-                    Column(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(modifier = Modifier.padding(start = 16.dp), text = movie.title, fontSize = 19.sp, fontWeight = FontWeight.SemiBold)
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(modifier = Modifier.padding(start = 16.dp), text = watchedDetailsState.movie.title, fontSize = 19.sp, fontWeight = FontWeight.SemiBold)
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                        Row (
-                            modifier = Modifier.padding(start = 16.dp)
-                        ){
-                            RatingBar(
-                                starsModifier = Modifier.size(18.dp),
-                                rating = movie.vote_average.div(2)
-                            )
+                    Row (
+                        modifier = Modifier.padding(start = 16.dp)
+                    ){
+                        RatingBar(
+                            starsModifier = Modifier.size(18.dp),
+                            rating = watchedDetailsState.movie.vote_average.div(2)
+                        )
 
-                            Text(
-                                modifier = Modifier.padding(start = 4.dp),
-                                text = movie.vote_average.toString().take(3),
-                                color = Color.LightGray,
-                                fontSize = 14.sp,
-                                maxLines = 1
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        Text(modifier = Modifier.padding(start = 16.dp), text = movie.vote_count.toString() + " votes")
-
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        Text(modifier = Modifier.padding(start = 16.dp), text = "Release Date: " + movie.release_date)
+                        Text(
+                            modifier = Modifier.padding(start = 4.dp),
+                            text = watchedDetailsState.movie.vote_average.toString().take(3),
+                            color = Color.LightGray,
+                            fontSize = 14.sp,
+                            maxLines = 1
+                        )
                     }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Text(modifier = Modifier.padding(start = 16.dp), text = watchedDetailsState.movie.vote_count.toString() + " votes")
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Text(modifier = Modifier.padding(start = 16.dp), text = "Release Date: " + watchedDetailsState.movie.release_date)
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            if (watchedDetailsState.movie != null && watchedDetailsState.movie.rating > 0f){
+            if (watchedDetailsState.movie.rating > 0f){
                 Row (modifier = Modifier.padding(start = 16.dp)){
                     Text(
                         text = "Your Rating: ",
@@ -181,14 +191,14 @@ fun WatchedDetailsScreen() {
 
                     RatingBar(
                         starsModifier = Modifier.size(24.dp).align(Alignment.CenterVertically),
-                        rating = watchedDetailsState.movie.rating.toDouble()
+                        rating = watchedDetailsState.movie.rating
                     )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            if (watchedDetailsState.movie != null && watchedDetailsState.movie.review != ""){
+            if (watchedDetailsState.movie.review != ""){
                 Text(
                     modifier = Modifier.padding(start = 16.dp),
                     text = "Review",
@@ -214,14 +224,93 @@ fun WatchedDetailsScreen() {
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                watchedDetailsState.movie?.let {
-                    Text(
-                        modifier = Modifier.padding(start = 16.dp, end = 16.dp),
-                        text = it.overview,
-                        fontSize = 16.sp,
-                    )
-                }
+                Text(
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+                    text = watchedDetailsState.movie.overview,
+                    fontSize = 16.sp,
+                )
             }
+        }
+
+        Button(
+            onClick = {
+                showRatingDialog = true
+            },
+            modifier = Modifier.fillMaxWidth().padding(16.dp).align(Alignment.BottomCenter)
+        ) {
+            Text(text = "Edit")
+        }
+
+        if (showRatingDialog) {
+            var userRating by remember { mutableDoubleStateOf(watchedDetailsState.movie.rating) }
+            var userReview by remember { mutableStateOf(watchedDetailsState.movie.review) }
+            AlertDialog(
+                onDismissRequest = { showRatingDialog = false },
+                title = { Text("Edit") },
+                text = {
+                    Column {
+                        Text("Rate:")
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Row {
+                            RatingBar(
+                                starsModifier = Modifier.size(24.dp),
+                                rating = userRating,
+                                onRatingChanged = { rating -> userRating = rating }
+                            )
+
+                            IconButton(
+                                onClick = {
+                                    userRating = 0.0
+                                },
+                                modifier = Modifier
+                                    .padding(horizontal = 4.dp)
+                                    .size(24.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Delete Rating",
+                                    tint = Color.Gray
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Text("Review:")
+
+                        BasicTextField(
+                            value = userReview,
+                            onValueChange = { userReview = it },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(100.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(MaterialTheme.colorScheme.primaryContainer)
+                                .padding(8.dp),
+                            singleLine = false
+                        )
+                    }
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            watchedDetailsViewModel.updateReviewAndRating(watchedDetailsState.movie.id, userRating, userReview)
+                            showRatingDialog = false
+                        }
+                    ) {
+                        Text("Submit")
+                    }
+                },
+                dismissButton = {
+                    Button(onClick = {
+                        showRatingDialog = false
+                    }) {
+                        Text("Cancel")
+                    }
+                }
+            )
         }
     }
 }

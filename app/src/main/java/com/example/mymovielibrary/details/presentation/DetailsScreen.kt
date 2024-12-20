@@ -1,6 +1,5 @@
 package com.example.mymovielibrary.details.presentation
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -28,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -44,7 +44,6 @@ import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
-import com.example.mymovielibrary.details.watched.presentation.WatchedDetailsViewModel
 import com.example.mymovielibrary.movieList.data.mappers.toMovieEntity
 import com.example.mymovielibrary.movieList.data.mappers.toWatchedMovie
 import com.example.mymovielibrary.movieList.data.remote.MovieApi
@@ -62,7 +61,7 @@ fun DetailsScreen() {
     val movieListState = movieListViewModel.movieListState.collectAsState().value
 
     var showRatingDialog by remember { mutableStateOf(false) }
-    var userRating by remember { mutableStateOf(0f) }
+    var userRating by remember { mutableFloatStateOf(0f) }
     var userReview by remember { mutableStateOf("") }
     var deleteFromWatchlist by remember { mutableStateOf(false) }
 
@@ -288,7 +287,7 @@ fun DetailsScreen() {
                                 deleteFromWatchlist = false
                             }
 
-                            movieListViewModel.addToWatchedMovieList(detailsState.movie!!.toWatchedMovie(userReview, userRating))
+                            movieListViewModel.addToWatchedMovieList(detailsState.movie!!.toWatchedMovie(userReview, userRating.toDouble()))
                             showRatingDialog = false
                         }
                     ) {

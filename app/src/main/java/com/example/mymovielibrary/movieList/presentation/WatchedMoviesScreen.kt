@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.mymovielibrary.details.watched.presentation.component.WatchedMovieItem
-import com.example.mymovielibrary.movieList.data.mappers.toMovie
 
 @Composable
 fun WatchedMoviesScreen(
