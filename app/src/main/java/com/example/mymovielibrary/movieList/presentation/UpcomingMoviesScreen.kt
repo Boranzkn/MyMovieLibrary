@@ -36,7 +36,8 @@ fun UpcomingMoviesScreen(
             items(movieListState.upcomingMovieList.size){index ->
                 MovieItem(
                     movie = movieListState.upcomingMovieList[index],
-                    navHostController =  navController
+                    navHostController =  navController,
+                    onDeleteClick = {}
                 )
 
                 Spacer(Modifier.height(16.dp))

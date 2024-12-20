@@ -14,12 +14,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.mymovielibrary.movieList.data.mappers.toMovie
 import com.example.mymovielibrary.movieList.presentation.component.MovieItem
 import com.example.mymovielibrary.movieList.util.Category
-import kotlin.reflect.KFunction2
 
 @Composable
 fun WatchListScreen(
@@ -42,7 +40,10 @@ fun WatchListScreen(
             items(movieListState.watchList.size){index ->
                 MovieItem(
                     movie = movieListState.watchList[index].toMovie(Category.WATCHLIST),
-                    navHostController =  navController
+                    navHostController =  navController,
+                    onDeleteClick = {
+                        movieListViewModel.deleteMovieFromWatchListById(movieListState.watchList[index].id)
+                    }
                 )
 
                 Spacer(Modifier.height(16.dp))

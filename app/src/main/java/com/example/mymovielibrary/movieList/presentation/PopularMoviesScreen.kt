@@ -15,7 +15,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.mymovielibrary.movieList.presentation.component.MovieItem
 import com.example.mymovielibrary.movieList.util.Category
-import kotlin.reflect.KFunction2
 
 @Composable
 fun PopularMoviesScreen(
@@ -37,7 +36,8 @@ fun PopularMoviesScreen(
             items(movieListState.popularMovieList.size){index ->
                 MovieItem(
                     movie = movieListState.popularMovieList[index],
-                    navHostController =  navController
+                    navHostController =  navController,
+                    onDeleteClick = {}
                 )
 
                 Spacer(Modifier.height(16.dp))

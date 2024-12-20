@@ -27,4 +27,6 @@ interface MovieListRepository {
     suspend fun setMovieToWatched(movie: WatchedMovie)
 
     suspend fun deleteMovieFromWatchListById(id: Int)
+
+    suspend fun deleteMovieFromWatchedMovieListById(id: Int)
 }

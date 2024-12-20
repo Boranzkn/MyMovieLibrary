@@ -1,5 +1,6 @@
 package com.example.mymovielibrary.details.presentation
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -225,7 +226,6 @@ fun DetailsScreen() {
                     else -> {
                         Button(
                             onClick = {
-                                detailsViewModel.addToWatchList(movie.toMovieEntity(Category.WATCHLIST))
                                 movieListViewModel.addToWatchList(movie.toMovieEntity(Category.WATCHLIST))
                             },
                             modifier = Modifier
@@ -284,13 +284,11 @@ fun DetailsScreen() {
                     Button(
                         onClick = {
                             if (deleteFromWatchlist){
-                                detailsViewModel.removeFromWatchList(detailsState.movie!!.id)
-                                movieListViewModel.removeFromWatchList(detailsState.movie.id)
+                                movieListViewModel.deleteMovieFromWatchListById(detailsState.movie!!.id)
                                 deleteFromWatchlist = false
                             }
 
-                            detailsViewModel.addToWatchedMovieList(detailsState.movie!!.toWatchedMovie(userReview, userRating))
-                            movieListViewModel.addToWatchedMovieList(detailsState.movie.toWatchedMovie(userReview, userRating))
+                            movieListViewModel.addToWatchedMovieList(detailsState.movie!!.toWatchedMovie(userReview, userRating))
                             showRatingDialog = false
                         }
                     ) {

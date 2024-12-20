@@ -38,8 +38,11 @@ fun WatchedMoviesScreen(
         ) {
             items(movieListState.watchedMovieList.size){index ->
                 WatchedMovieItem(
-                    movie = movieListState.watchedMovieList[index].toMovie(),
-                    navHostController =  navController
+                    movie = movieListState.watchedMovieList[index],
+                    navHostController =  navController,
+                    onDeleteClick = {
+                        movieListViewModel.deleteMovieFromWatchedMovieListById(movieListState.watchedMovieList[index].id)
+                    }
                 )
 
                 Spacer(Modifier.height(16.dp))

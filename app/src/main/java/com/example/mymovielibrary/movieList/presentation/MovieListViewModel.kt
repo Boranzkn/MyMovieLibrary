@@ -9,12 +9,8 @@ import com.example.mymovielibrary.movieList.util.Category
 import com.example.mymovielibrary.movieList.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -37,6 +33,7 @@ class MovieListViewModel @Inject constructor(
         viewModelScope.launch {
             val updatedWatchList = _movieListState.value.watchList + newMovie
             _movieListState.value = _movieListState.value.copy(watchList = updatedWatchList)
+            movieListRepository.setMovieToWatchList(newMovie)
         }
     }
 
@@ -44,12 +41,13 @@ class MovieListViewModel @Inject constructor(
         viewModelScope.launch {
             val updatedWatchedMovieList = _movieListState.value.watchedMovieList + newMovie
             _movieListState.value = _movieListState.value.copy(watchedMovieList = updatedWatchedMovieList)
+            movieListRepository.setMovieToWatched(newMovie)
         }
     }
 
-    fun removeFromWatchList(id: Int) {
+    fun deleteMovieFromWatchListById(id: Int) {
         viewModelScope.launch {
-            movieListRepository.getWatchListMovie(id).collectLatest { result ->
+            movieListRepository.getWatchListMovie(id).collect { result ->
                 when(result){
                     is Resource.Error -> {
                         _movieListState.update {
@@ -65,6 +63,33 @@ class MovieListViewModel @Inject constructor(
                         if (result.data != null){
                             val updatedWatchList = _movieListState.value.watchList - result.data
                             _movieListState.value = _movieListState.value.copy(watchList = updatedWatchList)
+                            movieListRepository.deleteMovieFromWatchListById(id)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun deleteMovieFromWatchedMovieListById(id: Int) {
+        viewModelScope.launch {
+            movieListRepository.getWatchedMovie(id).collect { result ->
+                when(result){
+                    is Resource.Error -> {
+                        _movieListState.update {
+                            it.copy(isLoading = false)
+                        }
+                    }
+                    is Resource.Loading -> {
+                        _movieListState.update {
+                            it.copy(isLoading = result.isLoading)
+                        }
+                    }
+                    is Resource.Success -> {
+                        if (result.data != null){
+                            val updatedWatchedMovieList = _movieListState.value.watchedMovieList - result.data
+                            _movieListState.value = _movieListState.value.copy(watchedMovieList = updatedWatchedMovieList)
+                            movieListRepository.deleteMovieFromWatchedMovieListById(id)
                         }
                     }
                 }
@@ -134,7 +159,7 @@ class MovieListViewModel @Inject constructor(
                             _movieListState.update {
                                 it.copy(
                                     popularMovieList = movieListState.value.popularMovieList
-                                            + popularList.shuffled(),
+                                            + popularList,
                                     popularMovieListPage = movieListState.value.popularMovieListPage + 1
                                 )
                             }
@@ -171,7 +196,7 @@ class MovieListViewModel @Inject constructor(
                             _movieListState.update {
                                 it.copy(
                                     upcomingMovieList = movieListState.value.upcomingMovieList
-                                            + upcomingList.shuffled(),
+                                            + upcomingList,
                                     upcomingMovieListPage = movieListState.value.upcomingMovieListPage + 1
                                 )
                             }
