@@ -47,6 +47,10 @@ class MovieListViewModel @Inject constructor(
 
     fun deleteMovieFromWatchListById(id: Int) {
         viewModelScope.launch {
+            _movieListState.update {
+                it.copy(isLoading = true)
+            }
+
             movieListRepository.getWatchListMovie(id).collect { result ->
                 when(result){
                     is Resource.Error -> {
@@ -73,6 +77,10 @@ class MovieListViewModel @Inject constructor(
 
     fun deleteMovieFromWatchedMovieListById(id: Int) {
         viewModelScope.launch {
+            _movieListState.update {
+                it.copy(isLoading = true)
+            }
+
             movieListRepository.getWatchedMovie(id).collect { result ->
                 when(result){
                     is Resource.Error -> {
@@ -105,29 +113,6 @@ class MovieListViewModel @Inject constructor(
                 }
                 else if (event.category == Category.UPCOMING){
                     getUpcomingMovieList()
-                }
-            }
-
-            is MovieListUIEvent.Navigate -> {
-                if (event.index == 0){
-                    _movieListState.update {
-                        it.copy(currentScreenIndex = event.index)
-                    }
-                }
-                else if (event.index == 1){
-                    _movieListState.update {
-                        it.copy(currentScreenIndex = event.index)
-                    }
-                }
-                else if (event.index == 2){
-                    _movieListState.update {
-                        it.copy(currentScreenIndex = event.index)
-                    }
-                }
-                else{
-                    _movieListState.update {
-                        it.copy(currentScreenIndex = event.index)
-                    }
                 }
             }
         }
@@ -207,7 +192,7 @@ class MovieListViewModel @Inject constructor(
         }
     }
 
-    private fun getWatchedMovieList(){
+    fun getWatchedMovieList(){
         viewModelScope.launch {
             _movieListState.update {
                 it.copy(isLoading = true)
@@ -239,7 +224,7 @@ class MovieListViewModel @Inject constructor(
         }
     }
 
-    private fun getWatchList(){
+    fun getWatchList() {
         viewModelScope.launch {
             _movieListState.update {
                 it.copy(isLoading = true)
@@ -269,5 +254,9 @@ class MovieListViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun isInWatchedMovieList(id: Int): Boolean {
+        return _movieListState.value.watchedMovieList.any { it.id == id }
     }
 }

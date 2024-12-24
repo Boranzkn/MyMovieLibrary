@@ -11,7 +11,7 @@ sealed class SearchUiEvents {
         val movie: Movie
     ): SearchUiEvents()
 
-    object OnPaginate: SearchUiEvents()
+    data object OnPaginate: SearchUiEvents()
 }
 
 

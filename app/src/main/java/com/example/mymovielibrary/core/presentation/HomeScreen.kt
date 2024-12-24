@@ -42,7 +42,6 @@ import com.example.mymovielibrary.movieList.presentation.WatchListScreen
 import com.example.mymovielibrary.movieList.presentation.WatchedMoviesScreen
 import com.example.mymovielibrary.movieList.util.Screen
 import com.example.mymovielibrary.search.peresentation.SearchListScreen
-import kotlin.reflect.KFunction2
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -143,27 +142,22 @@ fun BottomNavigationBar(bottomNavController: NavHostController, onEvent: (MovieL
                         selected.intValue = index
                         when(selected.intValue){
                             0 -> {
-                                onEvent(MovieListUIEvent.Navigate(0))
                                 bottomNavController.popBackStack()
                                 bottomNavController.navigate(Screen.Watched.rout)
                             }
                             1 -> {
-                                onEvent(MovieListUIEvent.Navigate(1))
                                 bottomNavController.popBackStack()
                                 bottomNavController.navigate(Screen.WatchList.rout)
                             }
                             2 -> {
-                                onEvent(MovieListUIEvent.Navigate(2))
                                 bottomNavController.popBackStack()
                                 bottomNavController.navigate(Screen.Search.rout)
                             }
                             3 -> {
-                                onEvent(MovieListUIEvent.Navigate(3))
                                 bottomNavController.popBackStack()
                                 bottomNavController.navigate(Screen.PopularMovieList.rout)
                             }
                             4 -> {
-                                onEvent(MovieListUIEvent.Navigate(4))
                                 bottomNavController.popBackStack()
                                 bottomNavController.navigate(Screen.UpcomingMovieList.rout)
                             }

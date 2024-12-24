@@ -98,18 +98,12 @@ class MovieListRepositoryImpl @Inject constructor(
 
             val watchedMovie = movieDatabase.movieDao.getWatchedMovieById(id)
 
-            if (watchedMovie != null) {
-                emit(
-                    Resource.Success(watchedMovie)
-                )
-
-                emit(Resource.Loading(false))
-                return@flow
-            }
-
-            emit(Resource.Error("Error no such movie"))
+            emit(
+                Resource.Success(watchedMovie)
+            )
 
             emit(Resource.Loading(false))
+            return@flow
         }
     }
 
@@ -156,18 +150,12 @@ class MovieListRepositoryImpl @Inject constructor(
                 return@flow
             }
 
-            if (movieDto != null) {
-                emit(
-                    Resource.Success(movieDto.toMovieEntity(Category.POPULAR).toMovie(Category.POPULAR))
-                )
-
-                emit(Resource.Loading(false))
-                return@flow
-            }
-
-            emit(Resource.Error("Error no such movie"))
+            emit(
+                Resource.Success(movieDto.toMovieEntity(Category.POPULAR).toMovie(Category.POPULAR))
+            )
 
             emit(Resource.Loading(false))
+            return@flow
         }
     }
 

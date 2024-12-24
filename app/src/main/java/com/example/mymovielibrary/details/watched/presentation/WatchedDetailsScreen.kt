@@ -54,7 +54,7 @@ fun WatchedDetailsScreen() {
     val watchedDetailsViewModel = hiltViewModel<WatchedDetailsViewModel>()
     val watchedDetailsState = watchedDetailsViewModel.watchedDetailsState.collectAsState().value
 
-    var showRatingDialog by remember { mutableStateOf(false) }
+    var showEditOption by remember { mutableStateOf(false) }
 
     val backdropImageState = rememberAsyncImagePainter(
         model = ImageRequest.Builder(LocalContext.current)
@@ -234,18 +234,18 @@ fun WatchedDetailsScreen() {
 
         Button(
             onClick = {
-                showRatingDialog = true
+                showEditOption = true
             },
             modifier = Modifier.fillMaxWidth().padding(16.dp).align(Alignment.BottomCenter)
         ) {
             Text(text = "Edit")
         }
 
-        if (showRatingDialog) {
+        if (showEditOption) {
             var userRating by remember { mutableDoubleStateOf(watchedDetailsState.movie.rating) }
             var userReview by remember { mutableStateOf(watchedDetailsState.movie.review) }
             AlertDialog(
-                onDismissRequest = { showRatingDialog = false },
+                onDismissRequest = { showEditOption = false },
                 title = { Text("Edit") },
                 text = {
                     Column {
@@ -297,7 +297,7 @@ fun WatchedDetailsScreen() {
                     Button(
                         onClick = {
                             watchedDetailsViewModel.updateReviewAndRating(watchedDetailsState.movie.id, userRating, userReview)
-                            showRatingDialog = false
+                            showEditOption = false
                         }
                     ) {
                         Text("Submit")
@@ -305,7 +305,7 @@ fun WatchedDetailsScreen() {
                 },
                 dismissButton = {
                     Button(onClick = {
-                        showRatingDialog = false
+                        showEditOption = false
                     }) {
                         Text("Cancel")
                     }

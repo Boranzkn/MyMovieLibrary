@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
@@ -28,6 +29,7 @@ import coil.request.ImageRequest
 import coil.size.Size
 import com.example.mymovielibrary.movieList.data.remote.MovieApi
 import com.example.mymovielibrary.movieList.domain.model.Movie
+import com.example.mymovielibrary.movieList.presentation.MovieListViewModel
 import com.example.mymovielibrary.movieList.util.Category
 import com.example.mymovielibrary.movieList.util.RatingBar
 import com.example.mymovielibrary.movieList.util.Screen
@@ -39,6 +41,8 @@ fun MovieItem(
     navHostController: NavHostController,
     onDeleteClick: () -> Unit
 ) {
+    val movieListViewModel = hiltViewModel<MovieListViewModel>()
+
     val imageState = rememberAsyncImagePainter(
         model = ImageRequest.Builder(LocalContext.current)
             .data(MovieApi.IMAGE_BASE_URL + movie.poster_path)
@@ -67,7 +71,12 @@ fun MovieItem(
         Column(
             modifier = Modifier
                 .clickable {
-                    navHostController.navigate(Screen.Details.rout + "/${movie.id}")
+                    if (movieListViewModel.isInWatchedMovieList(movie.id)){
+                        navHostController.navigate(Screen.WatchedDetails.rout + "/${movie.id}")
+                    }
+                    else{
+                        navHostController.navigate(Screen.Details.rout + "/${movie.id}")
+                    }
                 }
         ) {
             if (imageState is AsyncImagePainter.State.Error) {

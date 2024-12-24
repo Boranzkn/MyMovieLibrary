@@ -51,6 +51,27 @@ class WatchedDetailsViewModel @Inject constructor(
     fun updateReviewAndRating(id: Int, rating: Double, review: String){
         viewModelScope.launch {
             movieListRepository.updateWatchedMovieById(id, rating, review)
+            refreshMovieDetails(id)
+        }
+    }
+
+    private fun refreshMovieDetails(movieId: Int) {
+        viewModelScope.launch {
+            movieListRepository.getWatchedMovie(movieId).collectLatest { result ->
+                when(result){
+                    is Resource.Error -> {
+                        _watchedDetailsState.update { it.copy(isLoading = false) }
+                    }
+                    is Resource.Loading -> {
+                        _watchedDetailsState.update { it.copy(isLoading = result.isLoading) }
+                    }
+                    is Resource.Success -> {
+                        result.data?.let { movie ->
+                            _watchedDetailsState.update { it.copy(movie = movie) }
+                        }
+                    }
+                }
+            }
         }
     }
 }

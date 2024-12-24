@@ -17,10 +17,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.rounded.ImageNotSupported
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -256,11 +258,28 @@ fun DetailsScreen() {
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        RatingBar(
-                            starsModifier = Modifier.size(24.dp),
-                            rating = userRating.toDouble(),
-                            onRatingChanged = { rating -> userRating = rating.toFloat() }
-                        )
+                        Row {
+                            RatingBar(
+                                starsModifier = Modifier.size(24.dp),
+                                rating = userRating.toDouble(),
+                                onRatingChanged = { rating -> userRating = rating.toFloat() }
+                            )
+
+                            IconButton(
+                                onClick = {
+                                    userRating = 0.0f
+                                },
+                                modifier = Modifier
+                                    .padding(horizontal = 4.dp)
+                                    .size(24.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Delete Rating",
+                                    tint = Color.Gray
+                                )
+                            }
+                        }
 
                         Spacer(modifier = Modifier.height(16.dp))
 
