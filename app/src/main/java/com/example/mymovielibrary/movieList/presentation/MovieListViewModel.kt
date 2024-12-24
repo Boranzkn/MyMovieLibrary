@@ -115,6 +115,36 @@ class MovieListViewModel @Inject constructor(
                     getUpcomingMovieList()
                 }
             }
+
+            is MovieListUIEvent.Navigation -> {
+                when(event.index){
+                    0 -> {
+                        _movieListState.update {
+                            it.copy(currentScreenIndex = 0)
+                        }
+                    }
+                    1 -> {
+                        _movieListState.update {
+                            it.copy(currentScreenIndex = 1)
+                        }
+                    }
+                    2 -> {
+                        _movieListState.update {
+                            it.copy(currentScreenIndex = 2)
+                        }
+                    }
+                    3 -> {
+                        _movieListState.update {
+                            it.copy(currentScreenIndex = 3)
+                        }
+                    }
+                    else -> {
+                        _movieListState.update {
+                            it.copy(currentScreenIndex = 4)
+                        }
+                    }
+                }
+            }
         }
     }
 

@@ -163,7 +163,7 @@ fun SearchItem(
             Text(
                 modifier = Modifier
                     .padding(horizontal = 4.dp),
-                text = (movie.vote_average / 2).toString().take(3),
+                text = (movie.vote_average).toString().take(3),
                 fontSize = 14.sp,
                 maxLines = 1,
                 color = Color.White.copy(0.7f),

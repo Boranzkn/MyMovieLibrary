@@ -142,22 +142,27 @@ fun BottomNavigationBar(bottomNavController: NavHostController, onEvent: (MovieL
                         selected.intValue = index
                         when(selected.intValue){
                             0 -> {
+                                onEvent(MovieListUIEvent.Navigation(0))
                                 bottomNavController.popBackStack()
                                 bottomNavController.navigate(Screen.Watched.rout)
                             }
                             1 -> {
+                                onEvent(MovieListUIEvent.Navigation(1))
                                 bottomNavController.popBackStack()
                                 bottomNavController.navigate(Screen.WatchList.rout)
                             }
                             2 -> {
+                                onEvent(MovieListUIEvent.Navigation(2))
                                 bottomNavController.popBackStack()
                                 bottomNavController.navigate(Screen.Search.rout)
                             }
                             3 -> {
+                                onEvent(MovieListUIEvent.Navigation(3))
                                 bottomNavController.popBackStack()
                                 bottomNavController.navigate(Screen.PopularMovieList.rout)
                             }
                             4 -> {
+                                onEvent(MovieListUIEvent.Navigation(4))
                                 bottomNavController.popBackStack()
                                 bottomNavController.navigate(Screen.UpcomingMovieList.rout)
                             }
